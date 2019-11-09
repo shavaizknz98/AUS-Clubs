@@ -6,4 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".feedsActivity">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="30dp"
+        android:clickable="true"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:maxImageSize="30dp"
+        app:rippleColor="#FFFFFF"
+        app:srcCompat="@drawable/sharp_done_white_36" />
 </androidx.constraintlayout.widget.ConstraintLayout>

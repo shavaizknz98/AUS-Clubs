@@ -62,7 +62,7 @@ public class signUpActivity extends AppCompatActivity {
 
                                 current_user_db.child("Name").setValue(fullNameEditText.getText().toString().trim());
                                 current_user_db.child("Email").setValue(emailAddressEditText.getText().toString().trim());
-                                current_user_db.child("isAdmin").setValue(isAdminSwitch.isChecked());
+                                current_user_db.child("Admin").setValue(isAdminSwitch.isChecked());
                                 Toast.makeText(signUpActivity.this, "Welcome to the AUS Clubs App", Toast.LENGTH_SHORT).show();
                                 Intent toFeedsActivity = new Intent(signUpActivity.this, feedsActivity.class);
                                 startActivity(toFeedsActivity);

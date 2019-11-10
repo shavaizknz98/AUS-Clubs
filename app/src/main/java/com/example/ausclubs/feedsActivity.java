@@ -3,10 +3,13 @@ package com.example.ausclubs;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,14 +20,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+
 public class feedsActivity extends AppCompatActivity {
+
 
     private FloatingActionButton fab;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     public static Users user;
     private ProgressDialog progressDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,7 @@ public class feedsActivity extends AppCompatActivity {
                     user.setEmail(ds.child(mAuth.getUid()).getValue(Users.class).getEmail());
                     user.setName(ds.child(mAuth.getUid()).getValue(Users.class).getName());
                     user.setAdmin(ds.child(mAuth.getUid()).getValue(Users.class).isAdmin());
+                    user.setFeedCount(ds.child(mAuth.getUid()).getValue(Users.class).getFeedCount());
                 }
                 progressDialog.dismiss();
             }
@@ -73,4 +79,9 @@ public class feedsActivity extends AppCompatActivity {
             }
         });
     }
+
+
+
+
+
 }

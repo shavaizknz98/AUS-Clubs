@@ -3,11 +3,14 @@ package com.example.ausclubs;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
     private EditText emailEditText;
     private EditText passwordEditText;
     private FirebaseAuth mAuth;
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
         emailEditText = (EditText) findViewById(R.id.emailEditText);
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);
         final Intent toFeedsActivity = new Intent(MainActivity.this, feedsActivity.class);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Logging In...");
+        progressDialog.setCancelable(false);
+
         mAuth = FirebaseAuth.getInstance();
 
         if(FirebaseAuth.getInstance().getCurrentUser() != null){
@@ -42,16 +50,19 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
             startActivity(toFeedsActivity);
             finish();
         }
+        emailEditText.setOnEditorActionListener(this);
+        passwordEditText.setOnEditorActionListener(this);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-signIn();
+                signIn();
             }
         });
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard(MainActivity.this);
                 Intent toSignUp = new Intent(MainActivity.this, signUpActivity.class);
                 startActivity(toSignUp);
             }
@@ -61,15 +72,18 @@ signIn();
     @Override
     public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_DONE
-                && event.getAction() == KeyEvent.ACTION_DOWN) {
+    || actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
             signIn();//match this behavior to your 'Send' (or Confirm) button
         }
         return false;
     }
 
     private void signIn(){
+        progressDialog.show();
+        hideKeyboard(this);
         if(emailEditText.getText().toString().trim().isEmpty() || passwordEditText.getText().toString().trim().isEmpty()){
             Toast.makeText(MainActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
         }else{
             mAuth.signInWithEmailAndPassword(emailEditText.getText().toString().trim(), passwordEditText.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
@@ -77,12 +91,26 @@ signIn();
                     if(task.isSuccessful()){
                         final Intent toFeedsActivity = new Intent(MainActivity.this, feedsActivity.class);
                         startActivity(toFeedsActivity);
+                        finish();
+                        progressDialog.dismiss();
                     }else{
+                        progressDialog.dismiss();
                         Toast.makeText(MainActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-
                     }
                 }
             });
+
         }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

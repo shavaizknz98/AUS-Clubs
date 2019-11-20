@@ -2,6 +2,7 @@ package com.example.ausclubs;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -59,6 +61,7 @@ public class addToFeedActivity extends AppCompatActivity  implements DatePickerD
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard(addToFeedActivity.this);
                 if(!isValidEdiText(eventDescriptionEditText) || !isValidEdiText(eventClubNameEditText) || !isValidEdiText(eventTitleEditText)){
                     Toast.makeText(addToFeedActivity.this, "Please input all fields", Toast.LENGTH_SHORT).show();
                 }else if(!isValidDate()){
@@ -119,5 +122,15 @@ public class addToFeedActivity extends AppCompatActivity  implements DatePickerD
             return false;
         }
         return true;
+    }
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

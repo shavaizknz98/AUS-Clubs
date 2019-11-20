@@ -32,12 +32,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
-public class feedsActivity extends Activity implements AdapterView.OnItemClickListener {
+public class feedsActivity extends AppCompatActivity  implements AdapterView.OnItemClickListener {
 
 
     private FloatingActionButton fab;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private DatabaseReference mFeed;
     public static Users user;
     private ListView eventsListView;
     private ProgressDialog progressDialog;
@@ -79,14 +80,41 @@ public class feedsActivity extends Activity implements AdapterView.OnItemClickLi
         mainFeed = new Feeds();
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mFeed = FirebaseDatabase.getInstance().getReference().child("Users");
 
 
+        mFeed.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mainFeed.emptyFeed();
+
+                Feed tempFeed = new Feed();
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    long feedCount = (long) ds.child("feedCount").getValue();
+                    for(int i=1; i <= feedCount; i++){
+                        tempFeed = new Feed();
+                        tempFeed.setTitle(ds.child("Feeds").child("Feed"+i).getValue(Feed.class).getTitle());
+                        tempFeed.setDate(ds.child("Feeds").child("Feed"+i).getValue(Feed.class).getDate());
+                        tempFeed.setClubName(ds.child("Feeds").child("Feed"+i).getValue(Feed.class).getClubName());
+                        tempFeed.setEventDescription(ds.child("Feeds").child("Feed"+i).getValue(Feed.class).getEventDescription());
+                        mainFeed.addToFeedList(tempFeed); //adding feed to mainfeed
+                    }
+                }
+                progressDialog.dismiss();
+                updateDisplay();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         mDatabase.addValueEventListener(new ValueEventListener() {
             @SuppressLint("RestrictedApi")
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 user = new Users();
-                mainFeed.emptyFeed();
+
                 Feed tempFeed = new Feed();
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
 
@@ -94,20 +122,10 @@ public class feedsActivity extends Activity implements AdapterView.OnItemClickLi
                     user.setName(ds.child(mAuth.getUid()).getValue(Users.class).getName());
                     user.setAdmin(ds.child(mAuth.getUid()).getValue(Users.class).isAdmin());
                     user.setFeedCount(ds.child(mAuth.getUid()).getValue(Users.class).getFeedCount());
-                    for(int i=1; i <= user.getFeedCount(); i++){
-                        tempFeed = new Feed();
-                        tempFeed.setTitle(ds.child(mAuth.getUid()).child("Feeds").child("Feed"+i).getValue(Feed.class).getTitle());
-                        tempFeed.setDate(ds.child(mAuth.getUid()).child("Feeds").child("Feed"+i).getValue(Feed.class).getDate());
-                        tempFeed.setClubName(ds.child(mAuth.getUid()).child("Feeds").child("Feed"+i).getValue(Feed.class).getClubName());
-                        tempFeed.setEventDescription(ds.child(mAuth.getUid()).child("Feeds").child("Feed"+i).getValue(Feed.class).getEventDescription());
-                        mainFeed.addToFeedList(tempFeed); //adding feed to mainfeed
-                    }
                 }
-                progressDialog.dismiss();
                 if (!user.isAdmin()) {
                     fab.setVisibility(View.GONE);
                 }
-                updateDisplay();
             }
 
             @Override
@@ -130,9 +148,19 @@ public class feedsActivity extends Activity implements AdapterView.OnItemClickLi
         });
     }
 
-
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+        Feed clickedOnFeed = mainFeed.getFeedList().get(position);
+
+        Intent intentToEvent = new Intent(this, eventInfo.class);
+
+        intentToEvent.putExtra("ClubName", clickedOnFeed.getClubName());
+        intentToEvent.putExtra("Title", clickedOnFeed.getTitle());
+        intentToEvent.putExtra("Date", clickedOnFeed.getDate());
+        intentToEvent.putExtra("Description", clickedOnFeed.getEventDescription());
+
+        startActivity(intentToEvent);
+
 
     }
 

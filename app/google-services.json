@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "781162517203",
-    "firebase_url": "https://aus-clubs.firebaseio.com",
-    "project_id": "aus-clubs",
-    "storage_bucket": "aus-clubs.appspot.com"
+    "project_number": "47736200616",
+    "firebase_url": "https://ausclubs-1c252.firebaseio.com",
+    "project_id": "ausclubs-1c252",
+    "storage_bucket": "ausclubs-1c252.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:781162517203:android:dd30830e783815b7eefa26",
+        "mobilesdk_app_id": "1:47736200616:android:b8c76df62be7a9e3f0919d",
         "android_client_info": {
           "package_name": "com.example.ausclubs"
         }
       },
       "oauth_client": [
         {
-          "client_id": "781162517203-ok3b7q5dk7ct88raa2inl64adpj8gpt2.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.ausclubs",
-            "certificate_hash": "64bb1714a778012e5a2112ef87fce518b79eb74c"
-          }
-        },
-        {
-          "client_id": "781162517203-vetkc7fsll8oijensjlrsr13ddh2qdl6.apps.googleusercontent.com",
+          "client_id": "47736200616-otphranggfa3988m71t16thbe05dqkpu.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC3Mp-1wt9660_0D4eqa9KFaFbnTXWpTFE"
+          "current_key": "AIzaSyAgrlXma642e8jsBqn-ZyEc41Nhqlh9QA4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "781162517203-vetkc7fsll8oijensjlrsr13ddh2qdl6.apps.googleusercontent.com",
+              "client_id": "47736200616-otphranggfa3988m71t16thbe05dqkpu.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

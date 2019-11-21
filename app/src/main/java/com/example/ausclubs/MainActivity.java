@@ -45,11 +45,6 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
 
         mAuth = FirebaseAuth.getInstance();
 
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            toFeedsActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(toFeedsActivity);
-            finish();
-        }
         emailEditText.setOnEditorActionListener(this);
         passwordEditText.setOnEditorActionListener(this);
 

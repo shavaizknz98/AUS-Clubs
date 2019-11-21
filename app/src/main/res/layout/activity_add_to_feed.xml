@@ -44,17 +44,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
                 android:clickable="true"
                 android:contextClickable="true"
                 android:linksClickable="true"
                 android:longClickable="true"
                 android:text="Click Here to Enter Date"
                 android:textColor="#000000"
-                android:textSize="15sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/eventTitleEditText" />
+                app:layout_constraintTop_toBottomOf="@+id/clubNameSpinner" />
 
             <EditText
                 android:id="@+id/eventDescriptionEditText"
@@ -72,18 +72,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dateTextView" />
 
-            <EditText
-                android:id="@+id/eventClubNameEditText"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="40dp"
-                android:ems="10"
-                android:hint="Club Name"
-                android:inputType="textPersonName"
-                app:layout_constraintStart_toEndOf="@+id/dateTextView"
-                app:layout_constraintTop_toBottomOf="@+id/eventTitleEditText" />
-
             <Button
                 android:id="@+id/uploadButton"
                 android:layout_width="match_parent"
@@ -98,6 +86,29 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/eventDescriptionEditText" />
+
+            <Spinner
+                android:id="@+id/clubNameSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:spinnerMode="dialog"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/eventTitleEditText" />
+
+            <Button
+                android:id="@+id/addLocationBtn"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="#860000"
+                android:text="Add Location"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/eventTitleEditText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

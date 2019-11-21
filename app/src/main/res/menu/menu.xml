@@ -6,4 +6,9 @@
         android:id="@+id/menuLogOut"
         android:title="Log Out"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/menuRefreshBtn"
+        android:icon="@drawable/baseline_cached_black_18dp"
+        android:title="Refresh"
+        app:showAsAction="always" />
 </menu>

@@ -1,12 +1,43 @@
 package com.example.ausclubs;
 
-import java.util.ArrayList;
-
 public class Feed {
+
+    /*
+    Model class to hold values for each Feed
+    This class only consists of Setters and Getters for each feed
+     */
 
     private String Title, clubName, eventDescription, Date;
     private  Double locationLatitude, locationLongitude;
     private String setBy;
+    private boolean Hidden;
+    private int feedCount = 0;
+    private int ID =0;
+
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public boolean isHidden() {
+        return Hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        Hidden = hidden;
+    }
+
+    public int getFeedCount(){
+        return feedCount;
+    }
+
+    public void setFeedCount(int feedCount) {
+        this.feedCount = feedCount;
+    }
 
     public String getSetBy() {
         return setBy;

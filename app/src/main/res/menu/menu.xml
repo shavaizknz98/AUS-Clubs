@@ -7,8 +7,11 @@
         android:title="Log Out"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menuSearch"
+        android:title="@android:string/search_go" />
+    <item
         android:id="@+id/menuRefreshBtn"
-        android:icon="@drawable/baseline_cached_black_18dp"
+        android:icon="@drawable/baseline_cached_white_18dp"
         android:title="Refresh"
         app:showAsAction="always" />
 </menu>

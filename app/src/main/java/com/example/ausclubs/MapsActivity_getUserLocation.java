@@ -54,11 +54,14 @@ import static com.example.ausclubs.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 public class MapsActivity_getUserLocation extends FragmentActivity implements OnMapReadyCallback {
 
+
+    /*
+    This is the Map Fragment Activity to be used for choosing event location, it also has an added feature that utilizes the
+    google Geocoder API in order to allow the user to be able to search for a location and use that as the event location
+     */
+
     public static final String TAG = "MapsActivity";
 
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    public static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     public static final float DEFAULT_ZOOM = 15f;
     private EditText mSearchText;
     private ProgressDialog progressDialog;
@@ -68,44 +71,43 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
     private GoogleMap mMap;
 
     private ImageView chooseloc;
-    private boolean hasLocationAccess;
     private LatLng finalloc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps_get_user_location);
-        mSearchText = (EditText) findViewById(R.id.input_search);
+        setContentView(R.layout.activity_maps_get_user_location);//Set Map Fragment Layout
+        mSearchText = (EditText) findViewById(R.id.input_search);//Search EditText so that the user can search for places
         progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Finding...");
+        progressDialog.setMessage("Finding...");//Progress Dialog to show while the app is finding the searched locztion
         progressDialog.setCancelable(false);
 
         chooseloc = (ImageView) findViewById(R.id.ic_choosethisloc);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        getLocationPermission();
+        getLocationPermission();//Request permission if it has already not been asked
 
     }
 
 
 
-    private void geoLocate(){
+    private void geoLocate(){//This is the function that will search for the location that has been typed into the search bar
         Log.d("Geolocate","Geolocating");
         String searchString = mSearchText.getText().toString();
-        Geocoder geocoder = new Geocoder(MapsActivity_getUserLocation.this);
+        Geocoder geocoder = new Geocoder(MapsActivity_getUserLocation.this);//Instantiage Geocoder class that will retrieve location from search string
         List<Address> list = new ArrayList<>();
         try {
-            list = geocoder.getFromLocationName(searchString,1);
+            list = geocoder.getFromLocationName(searchString,1);//Will return a maximum of locatino which has the highest hcance of matching with the users search input
         } catch (IOException e) {
             Log.e("geolocate",e.getMessage());
         }
         if(list.size()>0){
-            Address address = list.get(0);
+            Address address = list.get(0);//Get the first value sent (Max results are 1)
             Log.d(TAG, address.toString());
             mMap.clear();
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
+            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));//Move Camera to retrived Lat Long from searched address
 
-            finalloc = new LatLng(address.getLatitude(), address.getLongitude());
+            finalloc = new LatLng(address.getLatitude(), address.getLongitude());//Set searched address as the location to be returned
         }
         else{
             Log.d(TAG, "Nothing found");
@@ -118,18 +120,18 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
         Log.d("Init","Init:Initialising");
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {//Initialize search Text Listener for return key
                 if(actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
                     //Execute geolocate
                     progressDialog.show();
-                    geoLocate();
+                    geoLocate();//If return key pressed then use the GeoCoder to find the location searched
                     progressDialog.dismiss();
                 }
                 return false;
             }
         });
 
-        chooseloc.setOnClickListener(new View.OnClickListener() {
+        chooseloc.setOnClickListener(new View.OnClickListener() {//This listener will return the set location that has been done by either searching, current user location or by pressing on the map
             @Override
             public void onClick(View v) {
                 //return latlong to previous activity
@@ -143,7 +145,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume(){//Resume map if app was not in focus while the user was enabling location services
         super.onResume();
         if(isMapsEnabled()){
             if(mLocationPermissionGranted){
@@ -154,14 +156,14 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
         }
     }
 
-    private void getLocationPermission() {
+    private void getLocationPermission() {//Enable location permission if it has not already been done
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             initMap();
         }
     }
 
-    public boolean isMapsEnabled(){
+    public boolean isMapsEnabled(){//To check if location services are on, if not then proceed to the settings menu to enable them
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -172,7 +174,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
 
     }
 
-    public boolean isMapsEnabledNoAlert(){
+    public boolean isMapsEnabledNoAlert(){//Similar to the above function, except no alerts are created if location services are not available
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         if(!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -185,21 +187,21 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
 
 
 
-    private void buildAlertMessageNoGPS(){
+    private void buildAlertMessageNoGPS(){//Alert to be shown if No GPS services are enabled,
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("This App requires GPS to work properly, do you want to enable it?")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent enableGPSIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        Intent enableGPSIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);//Launch settings if location services are not enabled
                         startActivityForResult(enableGPSIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
                     }
                 });
         final AlertDialog alert = builder.create();
         alert.show();
     }
-    public boolean isServicesOK(){
+    public boolean isServicesOK(){ //Check to see if google play services are enabled, this has already been documented in addToFeedActivity, it has been added here again since it is possible that the user can disable location services before the maps is launched
         Log.d(TAG, "Checking google services");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapsActivity_getUserLocation.this);
@@ -217,18 +219,10 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
         }
         return false;
     }
-    private boolean checkMapServices(){
-        if(isServicesOK()){
-            if(isMapsEnabledNoAlert()){
-                return true;
-            }
-        }
-        return false;
 
-    }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {//Already documented in addToFeedActivity, placed here again since it is possible that the user can disable location services before the maps is launched
         mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION:{
@@ -243,7 +237,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
 
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {//Launch Permissions for location with expected result that gps services have been enabled
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS:
@@ -254,7 +248,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
                 }
         }
     }
-    private void initMap() {
+    private void initMap() {//Initialize map once all services are enabled and permission are granted
         if(isMapsEnabledNoAlert() &&  ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.map);
@@ -262,13 +256,13 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
         }
     }
 
-    private void getDeviceLocation() {
+    private void getDeviceLocation() {//Get Current location if the user wants to set current location as the event location
         Log.d(TAG, "getDeviceLocation: finding location");
 
-        mFusedLocationProvider = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationProvider = LocationServices.getFusedLocationProviderClient(this);//Get Fused Location Provider
 
         try {
-            if (mLocationPermissionGranted) {
+            if (mLocationPermissionGranted) {//IF permission has been granted then move camera to the current location and set that as the location for the event
                 Task location = mFusedLocationProvider.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -287,7 +281,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
                     }
                 });
             }
-        } catch (java.lang.NullPointerException n) {
+        } catch (java.lang.NullPointerException n) {//Null Exception can be caused for when the location services are disabled after maps activity has been launched
             Toast.makeText(this, "Please enable location services", Toast.LENGTH_SHORT).show();
             Intent backtoUserMainPage = new Intent(MapsActivity_getUserLocation.this, feedsActivity.class);
             backtoUserMainPage.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -298,7 +292,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
         }
     }
 
-    private void moveCamera(LatLng latLng, float zoom, String title) {
+    private void moveCamera(LatLng latLng, float zoom, String title) {//Function created that will move the map from whereever it is to the LatLng coordinated that are passed to the function
         Log.d(TAG, "moveCamera: Moving camera to lat:" + latLng.latitude + " long:" + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
 
@@ -308,7 +302,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
 
 
     @Override
-    public void onMapReady(final GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {//If map is ready then set the current map camera to be at the users current location
         mMap = googleMap;
         Log.d(TAG, "onMapReady: Map ready");
 
@@ -324,7 +318,7 @@ public class MapsActivity_getUserLocation extends FragmentActivity implements On
             init();
         }
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {//This listener will place a marker for whever the user taps so that that location can be used as the event location
             @Override
             public void onMapClick(LatLng latLng) {
                 MarkerOptions m = new MarkerOptions();

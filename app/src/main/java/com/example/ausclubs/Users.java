@@ -2,6 +2,14 @@ package com.example.ausclubs;
 
 public class Users {
 
+
+    /*
+
+    This is the model class that holds the Users information for when they sign up, it can be used to see which clubs the user is part of when adding
+    an event to the feed list
+
+     */
+
     private String Email;
     private String Name;
     private int feedCount;
@@ -9,7 +17,7 @@ public class Users {
     private String clubOne;
     private String clubTwo = "";
 
-    public static String C1 = "";
+    public static String C1 = "";//Since only one user can be logged in at a time, this will hold a ClubONe and ClubTwo names and can be accessed from any class since it is static
     public static String C2 = "";
 
     public Users() {
@@ -38,12 +46,12 @@ public class Users {
 
     public void setClubOne(String clubOne) {
         this.clubOne = clubOne;
-        C1 = clubOne;
+        C1 = clubOne;//Set Static Variable for Club Names
     }
 
     public void setClubTwo(String clubTwo) {
         this.clubTwo = clubTwo;
-        C2 = clubTwo;
+        C2 = clubTwo;//Set Static Variable for Club Names
     }
 
     public int getFeedCount() {return feedCount;}

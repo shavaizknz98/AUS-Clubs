@@ -23,12 +23,18 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements TextView.OnEditorActionListener {
 
+    /*
+
+    This Class is the LogIn Page and also the first activity to be loaded
+
+     */
+
     private Button signUpButton;
     private Button signInButton;
     private EditText emailEditText;
     private EditText passwordEditText;
     private FirebaseAuth mAuth;
-    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;//Set Progress Dialog for loading when confirming user credentials with Firebase Authentication
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,26 +44,29 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
         signInButton = (Button) findViewById(R.id.logInButton);
         emailEditText = (EditText) findViewById(R.id.emailEditText);
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);
-        final Intent toFeedsActivity = new Intent(MainActivity.this, feedsActivity.class);
+        final Intent toFeedsActivity = new Intent(MainActivity.this, feedsActivity.class); //Set intent to the feedsActivity
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Logging In...");
         progressDialog.setCancelable(false);
 
         mAuth = FirebaseAuth.getInstance();
 
-        emailEditText.setOnEditorActionListener(this);
+        emailEditText.setOnEditorActionListener(this);//Used so the the soft keyboard can be hidden as soon as log in button is clicked, as well ass log in if the user clicks on the enter key
         passwordEditText.setOnEditorActionListener(this);
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        emailEditText.setText("shavaizknz98@gmail.com");
+        passwordEditText.setText("Becooler98");
+
+        signInButton.setOnClickListener(new View.OnClickListener() {// Call Sign in function if sign in button pressed
             @Override
             public void onClick(View view) {
                 signIn();
             }
         });
-        signUpButton.setOnClickListener(new View.OnClickListener() {
+        signUpButton.setOnClickListener(new View.OnClickListener() {//Proceed to sing up page if user has no account
             @Override
             public void onClick(View view) {
-                hideKeyboard(MainActivity.this);
+                hideKeyboard(MainActivity.this);//Self explanatory
                 Intent toSignUp = new Intent(MainActivity.this, signUpActivity.class);
                 startActivity(toSignUp);
             }
@@ -79,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
         if(emailEditText.getText().toString().trim().isEmpty() || passwordEditText.getText().toString().trim().isEmpty()){
             Toast.makeText(MainActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
-        }else{
+        }else{//Use firebase Authenticator to sign in with email and password if the account exists, else then display a toast informing the user of the error
             mAuth.signInWithEmailAndPassword(emailEditText.getText().toString().trim(), passwordEditText.getText().toString().trim()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -89,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements TextView.OnEditor
                         finish();
                         progressDialog.dismiss();
                     }else{
-                        progressDialog.dismiss();
+                        progressDialog.dismiss();//Display error Toast to string if no user has been made.
                         Toast.makeText(MainActivity.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
                     }
                 }

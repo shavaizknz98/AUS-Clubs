@@ -22,43 +22,35 @@ import com.google.firebase.database.ValueEventListener;
 
 public class firebaseService extends Service {
 
-    private DatabaseReference mFeed;
-    private FirebaseAuth mAuth;
+    /*
+    This class is the service for the application that will provide the user with a notification every time a feed has been added.
+     */
+
+    private DatabaseReference mFeedCount;
+    private boolean firstTime = true;//No notification on the firsttime notification since otherwise a notification will be sent every time the listener is set
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        startNotificationListener();//Start Firebase Async Listener for notifications, no need for Timer Tasks since Firebase will automatically call the listener for notifications
+    }
 
 
-    public firebaseService() {
+    public void startNotificationListener() {
         Log.d("HELLOHELLO", "firebaseService: Service Started");
-        mAuth = FirebaseAuth.getInstance();
-
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            mFeed = FirebaseDatabase.getInstance().getReference().child("Users");
-            mFeed.addValueEventListener(new ValueEventListener() {
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){//Only provide notification if user is logged in
+            mFeedCount = FirebaseDatabase.getInstance().getReference().child("feedCount"); //Set FeedCount value
+            mFeedCount.addValueEventListener(new ValueEventListener() {//Set listener for feedCOunt, so if feedCount has changed, then provide notification
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    Feed tempFeed = new Feed();
-                    for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                        try {
-                            long feedCount = (long) ds.child("feedCount").getValue();
-                            if(feedCount!=0) {
-                                tempFeed = new Feed();
-                                tempFeed.setTitle(ds.child("Feeds").child("Feed" + feedCount).getValue(Feed.class).getTitle());
-                                tempFeed.setDate(ds.child("Feeds").child("Feed" + feedCount).getValue(Feed.class).getDate());
-                                tempFeed.setClubName(ds.child("Feeds").child("Feed" + feedCount).getValue(Feed.class).getClubName());
-                                tempFeed.setEventDescription(ds.child("Feeds").child("Feed" + feedCount).getValue(Feed.class).getEventDescription());
-                            }
-                        }catch (NullPointerException e){
-
-                        }
-
-                    }
+                    //Boiler plate notification code from Google Notification Documentation
                     createNotificationChannel();
 
                     // Create an explicit intent for an Activity in your app
                     Intent intent = new Intent(firebaseService.this, feedsActivity.class);
 
                     PendingIntent pendingIntent = PendingIntent.getActivity(firebaseService.this, 0, intent, 0);
-
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(firebaseService.this, "Event Notifications")
                             .setSmallIcon(R.drawable.common_google_signin_btn_icon_light)
                             .setContentTitle("New Event From AUS Clubs" )
@@ -68,8 +60,11 @@ public class firebaseService extends Service {
 
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(firebaseService.this);
 
-// notificationId is a unique int for each notification that you must define
-                    notificationManager.notify(50, builder.build());
+                    // notificationId is a unique int for each notification that you must define
+                    if(!firstTime)//First Time Notifications are to be sent are only after the app has launched AND the user has logged in, This boolean check will take care of that
+                        notificationManager.notify(50, builder.build());
+                    firstTime = false;
+
                 }
 
                 @Override
@@ -81,9 +76,7 @@ public class firebaseService extends Service {
 
     }
 
-
-
-    private void createNotificationChannel() {
+    private void createNotificationChannel() {//From Google Notification Documentation
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -98,11 +91,23 @@ public class firebaseService extends Service {
         }
     }
 
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFeedCount = null;
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-
-
+        return null;
     }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        startNotificationListener();
+        return START_STICKY;//Start Service again once resources are available again, if closed due to low memory.
+    }
+
+
 }
